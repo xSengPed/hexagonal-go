@@ -50,7 +50,7 @@ func (h *createPostHandler) CreatePostHandler(c *fiber.Ctx) error {
 		Content: payload.Content,
 	}
 
-	err = h.createPost(post)
+	err = h.createPost(c.Context(), post)
 
 	if err != nil {
 		return c.Status(200).JSON(&fiber.Map{
@@ -58,6 +58,8 @@ func (h *createPostHandler) CreatePostHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.SendStatus(200)
+	return c.Status(200).JSON(&fiber.Map{
+		"msg": "create success",
+	})
 
 }

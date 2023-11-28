@@ -6,15 +6,17 @@ import (
 	postapi "hexa-go/pkg/v1/post"
 
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // ? Add Router Config Interface Here !
 
 type routes struct {
+	mongoClient *mongo.Client
 }
 
-func NewRoute() *routes {
-	return &routes{}
+func NewRoute(mongoClient *mongo.Client) *routes {
+	return &routes{mongoClient}
 }
 
 func (r *routes) InitializeRouter() *fiber.App {
@@ -23,7 +25,7 @@ func (r *routes) InitializeRouter() *fiber.App {
 	v1 := router.Group("/api/v1")
 	postGroup := v1.Group("/post")
 
-	postDB := repository.NewPostRepositoryDB()
+	postDB := repository.NewPostRepositoryDB(r.mongoClient)
 	postService := postcore.NewService(postDB)
 	createPostHandler := postapi.NewCreatePostHandler(postService.CreatePostFunc)
 	getPostHandler := postapi.NewGetPostHandler(postService.GetPostFunc)
