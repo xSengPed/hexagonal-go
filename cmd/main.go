@@ -20,7 +20,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	app := routes.NewRoute(mongoClient).InitializeRouter()
 	app.Listen(":3000")
 }
