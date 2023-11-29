@@ -15,8 +15,8 @@ type ICommentRepositoryDB interface {
 	CreateComment(ctx context.Context, comment datamodels.Comment) error
 }
 
-func NewCommentRepositoryDB(mongoClient *mongo.Client) *CommentRepositoryDB {
-	return &CommentRepositoryDB{mongoClient.Database("my-app").Collection("comment")}
+func NewCommentRepositoryDB(collection *mongo.Collection) *CommentRepositoryDB {
+	return &CommentRepositoryDB{collection}
 }
 
 func (repo *CommentRepositoryDB) CreateComment(ctx context.Context, post datamodels.Comment) error {

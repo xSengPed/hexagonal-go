@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"hexa-go/configs"
 	commentapi "hexa-go/pkg/v1/comment"
 	commentcore "hexa-go/pkg/v1/core/comment"
 	commentrepo "hexa-go/pkg/v1/core/comment/repository"
@@ -16,19 +17,21 @@ import (
 
 type routes struct {
 	mongoClient *mongo.Client
+	cfg         *configs.Config
 }
 
-func NewRoute(mongoClient *mongo.Client) *routes {
-	return &routes{mongoClient}
+func NewRoute(mongoClient *mongo.Client, cfg *configs.Config) *routes {
+	return &routes{mongoClient, cfg}
 }
 
 func (r *routes) InitializeRouter() *fiber.App {
+	mongodb := r.mongoClient.Database(r.cfg.MongoConfig.DBName)
 	router := newFiber()
 
 	v1 := router.Group("/api/v1")
 
 	postGroup := v1.Group("/post")
-	postDB := repository.NewPostRepositoryDB(r.mongoClient)
+	postDB := repository.NewPostRepositoryDB(mongodb.Collection(r.cfg.AppConstants.PostCollectionName))
 	postService := postcore.NewService(postDB)
 	createPostHandler := postapi.NewCreatePostHandler(postService.CreatePostFunc)
 	getPostHandler := postapi.NewGetPostHandler(postService.GetPostFunc)
@@ -36,7 +39,7 @@ func (r *routes) InitializeRouter() *fiber.App {
 	postGroup.Get("/get", getPostHandler.GetPost)
 
 	commentGroup := v1.Group("/comment")
-	commentDB := commentrepo.NewCommentRepositoryDB(r.mongoClient)
+	commentDB := commentrepo.NewCommentRepositoryDB(mongodb.Collection(r.cfg.AppConstants.CommentCollectionName))
 	commentService := commentcore.NewService(commentDB)
 	createCommentHandler := commentapi.NewCreateCommentHandler(commentService.CreateComment)
 	commentGroup.Post("/create", createCommentHandler.CreateComment)

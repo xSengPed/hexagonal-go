@@ -17,8 +17,8 @@ type IPostRepositoryDB interface {
 	GetPost() (results []datamodels.Post, err error)
 }
 
-func NewPostRepositoryDB(mongoClient *mongo.Client) *postRepositoryDB {
-	return &postRepositoryDB{mongoClient.Database("my-app").Collection("post")}
+func NewPostRepositoryDB(collection *mongo.Collection) *postRepositoryDB {
+	return &postRepositoryDB{collection}
 }
 
 func (repo *postRepositoryDB) CreatePost(ctx context.Context, post datamodels.Post) error {

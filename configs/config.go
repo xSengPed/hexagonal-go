@@ -7,28 +7,48 @@ import (
 )
 
 type Config struct {
-	MongoConfig MongoConfig
+	MongoConfig  MongoConfig
+	AppConstants AppConstants
+}
+
+func NewConfig() *Config {
+	return &Config{}
 }
 
 type MongoConfig struct {
 	ClusterName string `env:"MONGO_CLUSTER,required"`
 	UserName    string `env:"MONGO_USERNAME,required"`
 	Password    string `env:"MONGO_PASSWORD,required"`
+	DBName      string `env:"MONGO_DATABASE_NAME,required"`
 }
 
-func LoadEnv() *Config {
+type AppConstants struct {
+	PostCollectionName    string
+	CommentCollectionName string
+}
+
+func (cfg *Config) loadEnv() *Config {
 	err := godotenv.Load("./configs/.env")
 
 	if err != nil {
 		slog.Error(err.Error())
 	}
 
-	config := &Config{}
-
-	err = env.Parse(config)
+	err = env.Parse(cfg)
 
 	if err != nil {
 		slog.Error(err.Error())
 	}
-	return config
+	return cfg
+}
+
+func (cfg *Config) initAppConstants() {
+	cfg.AppConstants.PostCollectionName = "Posts"
+	cfg.AppConstants.CommentCollectionName = "Comments"
+}
+
+func (cfg *Config) InitConfig() *Config {
+	cfg.loadEnv()
+	cfg.initAppConstants()
+	return cfg
 }
