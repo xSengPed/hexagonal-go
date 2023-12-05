@@ -1,6 +1,7 @@
 package postapi
 
 import (
+	"fmt"
 	postcore "hexa-go/pkg/v1/core/post"
 	"hexa-go/pkg/v1/datamodels"
 
@@ -33,6 +34,9 @@ func NewCreatePostHandler(createPost postcore.CreatePostFunc) *createPostHandler
 }
 
 func (h *createPostHandler) CreatePostHandler(c *fiber.Ctx) error {
+
+	token := c.Get("token")
+	fmt.Println(token)
 	var payload postReq
 
 	err := c.BodyParser(&payload)

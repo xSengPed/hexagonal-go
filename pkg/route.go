@@ -2,6 +2,7 @@ package routes
 
 import (
 	"hexa-go/configs"
+	"hexa-go/middleware"
 	commentapi "hexa-go/pkg/v1/comment"
 	commentcore "hexa-go/pkg/v1/core/comment"
 	commentrepo "hexa-go/pkg/v1/core/comment/repository"
@@ -35,7 +36,7 @@ func (r *routes) InitializeRouter() *fiber.App {
 	postService := postcore.NewService(postDB)
 	createPostHandler := postapi.NewCreatePostHandler(postService.CreatePostFunc)
 	getPostHandler := postapi.NewGetPostHandler(postService.GetPostFunc)
-	postGroup.Post("/create", createPostHandler.CreatePostHandler)
+	postGroup.Post("/create", middleware.LogTest, createPostHandler.CreatePostHandler)
 	postGroup.Get("/get", getPostHandler.GetPost)
 
 	commentGroup := v1.Group("/comment")
